@@ -5,8 +5,25 @@ const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal")
 document.getElementById("status").addEventListener("click", e => getStatus(e));
 document.getElementById("submit").addEventListener("click", e => postForm(e));
 
+function processOptions(form) {
+    let optArray = [];
+
+    for (let e of form.entries()) {
+        if (e[0] === "options") { // if is equal to options
+            optArray.push(e[1]);
+            // then we're going to push the second value in each entry into my temporary array
+        }
+    }
+
+    form.delete("options"); // delete all occurrences of options in our form data
+
+    form.append("options", optArray.join()); // append back a comma separated string of options to the form 
+
+    return form;
+}
+
 async function postForm(e) {
-    const form = new FormData(document.getElementById("checksform"));
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     /*The variable "e" in the loop is not the same "e" event 
     object that we pass into the function. To test if API is working : 
@@ -14,6 +31,10 @@ async function postForm(e) {
        console.log(e);
     }
     */
+
+    /*for (let entry of form.entries()) {
+        console.log(entry); // > Console : ['options', 'es6,es8,harsh,jquery,relax,strict'] to test processOptions(form)
+    }*/
 
     const response = await fetch(API_URL, {
         method: "POST",
@@ -85,4 +106,5 @@ function displayStatus(data) {
     resultsModal.show();
 
 }
+
 
